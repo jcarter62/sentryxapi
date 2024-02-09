@@ -1,0 +1,4 @@
+fastapi
+pyodbc
+python-decouple
+uvicorn

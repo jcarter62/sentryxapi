@@ -141,3 +141,41 @@ async def meter_sgma_usage(meter_id):
         data_obj = {"message": "failed", "data": []}
     finally:
         return JSONResponse(status_code=code, content=data_obj)
+
+
+@app.get("/api/v1/meter-status/{meter_id}")
+async def meter_status(meter_id):
+    code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    data_obj = {"message": "failed", "data": {
+        "readings": "no",
+        "transactions": "no",
+    }}
+
+    try:
+        data = MeterData(meter_id)
+        reading_data = data.get_meter_readings()
+        readings = "no"
+        for r in reading_data:
+            value = float(r['metered'])
+            if value != 0:
+                readings = "yes"
+                break
+
+        transactions = data.get_sgma_usage()
+        if len(transactions) > 0:
+            transactions = "yes"
+        else:
+            transactions = "no"
+
+        data_obj = {
+            "message": "success",
+            "data": {
+                "readings": readings,
+                "transactions": transactions,
+            }
+        }
+        code = status.HTTP_200_OK
+    except Exception as e:
+        print(e)
+    finally:
+        return JSONResponse(status_code=code, content=data_obj)

@@ -32,10 +32,10 @@ class MeterList:
                 TurnoutCodes
                 tc
                 on
-                t.Turnout_ID = tc.Turnout_ID and tc.Code_ID = 'TC0040'
-                where
+                t.Turnout_ID = tc.Turnout_ID and tc.Code_ID = 'TC0041'
+                -- where
                 -- t.Subsystem_ID in ('SGMA', 'GWMP') and
-                isnull(t.IsActive, 0) = 1
+                -- isnull(t.IsActive, 0) = 1
                 order
                 by
                 t.Turnout_ID;

@@ -29,7 +29,49 @@ async def meter_list():
     data = {"message": "failed", "data": meters}
 
     try:
-        meters = MeterList().meter_list
+        meters = MeterList().get_meter_list()
+        data = {
+            "message": "success",
+            "data": meters
+        }
+        code = status.HTTP_200_OK
+    except Exception as e:
+        print(e)
+        code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        data = {"message": "failed", "data": meters}
+    finally:
+        return JSONResponse(status_code=code, content=data)
+
+@app.post("/api/v1/meters/active")
+async def meter_list_active():
+    code = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    meters = []
+    data = {"message": "failed", "data": meters}
+
+    try:
+        meters = MeterList().get_active_meters()
+        data = {
+            "message": "success",
+            "data": meters
+        }
+        code = status.HTTP_200_OK
+    except Exception as e:
+        print(e)
+        code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        data = {"message": "failed", "data": meters}
+    finally:
+        return JSONResponse(status_code=code, content=data)
+
+@app.post("/api/v1/meters/inactive")
+async def meter_list_inactive():
+    code = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    meters = []
+    data = {"message": "failed", "data": meters}
+
+    try:
+        meters = MeterList().get_inactive_meters()
         data = {
             "message": "success",
             "data": meters

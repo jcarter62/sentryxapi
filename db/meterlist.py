@@ -1,14 +1,17 @@
 from .connection import Connection
+from decouple import config
 
 class MeterList:
 
     # Constructor
     def __init__(self):
+        self.tc_active = config("TC_ACTIVE")
+        self.tc_inactive = config("TC_INACTIVE")
         self.meter_list = []
         self.meter_count = 0
         self.Connection = Connection()
         self.connection = Connection.connection
-        self.get_meter_list()
+#        self.get_meter_list()
 
     # Add a meter to the list
     def add_meter(self, meter):
@@ -16,9 +19,12 @@ class MeterList:
         self.meter_count += 1
 
     # Get the meter list
-    def get_meter_list(self):
+    def get_meter_list(self, tc_code=None):
+        if tc_code is None:
+            tc_code = self.tc_active
+
         cursor = self.Connection.connection.cursor()
-        cmd = '''
+        cmd = f'''
                 select
                 cast('Water' as varchar(10)) as "Product_Type",
                 cast(t.Turnout_ID as varchar(100)) as "Socket_ID",
@@ -32,10 +38,7 @@ class MeterList:
                 TurnoutCodes
                 tc
                 on
-                t.Turnout_ID = tc.Turnout_ID and tc.Code_ID = 'TC0041'
-                -- where
-                -- t.Subsystem_ID in ('SGMA', 'GWMP') and
-                -- isnull(t.IsActive, 0) = 1
+                (t.Turnout_ID = tc.Turnout_ID) and (tc.Code_ID = '{tc_code}')
                 order
                 by
                 t.Turnout_ID;
@@ -51,4 +54,11 @@ class MeterList:
             cursor.close()
 
         return self.meter_list
+
+
+    def get_active_meters(self):
+        return self.get_meter_list(self.tc_active)
+
+    def get_inactive_meters(self):
+        return self.get_meter_list(self.tc_inactive)
 

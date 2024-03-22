@@ -90,7 +90,7 @@ async def meter_detail(meter_id):
     data = {"message": "failed", "data": []}
 
     try:
-        meters = MeterList().meter_list
+        meters = MeterList().get_meter_list()
         for meter in meters:
             if meter["socket_id"] == meter_id:
                 data = {

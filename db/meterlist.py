@@ -21,7 +21,9 @@ class MeterList:
     # Get the meter list
     def get_meter_list(self, tc_code=None):
         if tc_code is None:
-            tc_code = self.tc_active
+            tc_where = f"(tc.Code_ID in ('{self.tc_active}', '{self.tc_inactive}'))"
+        else:
+            tc_where = f"(tc.Code_ID = '{tc_code}')"
 
         cursor = self.Connection.connection.cursor()
         cmd = f'''
@@ -38,7 +40,7 @@ class MeterList:
                 TurnoutCodes
                 tc
                 on
-                (t.Turnout_ID = tc.Turnout_ID) and (tc.Code_ID = '{tc_code}')
+                (t.Turnout_ID = tc.Turnout_ID) and {tc_where}
                 order
                 by
                 t.Turnout_ID;
